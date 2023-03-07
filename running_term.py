@@ -87,9 +87,9 @@ def run(max_user, user_num, t_factor, data_size, noise_sigma, mode, policy, roun
 
         elif policy=='random':
         	env = MecSvrEnv(Random_policy(user_list, user_common_config, train_config))
-
-        elif policy=='max':
-        	env = MecSvrEnv(Maxpower_policy(user_list, user_common_config, train_config))
+                
+        elif policy=='GA':
+            env = MecSvrEnv(GA_policy(user_list, user_common_config, train_config))
 
         res_r = []
         res_p = []

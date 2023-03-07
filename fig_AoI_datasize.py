@@ -1,12 +1,12 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
-import ipdb as pdb
+# import ipdb as pdb
 import matplotlib.pyplot as plt
-from helper import *
+# from helper import *
 from matplotlib.font_manager import FontProperties  
 
-font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
+# font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
 
 def output_avg_energy(dir):
     dir_path = dir
@@ -55,11 +55,17 @@ for data_size in data_size_lst:
 
 print (AoI_ddpg, AoI_random)
 
-plt.plot(data_size_lst, AoI_ddpg,  marker='o', label = '最优策略')
-plt.plot(data_size_lst, AoI_random,   marker='*', label = '随机策略')
+plt.plot(data_size_lst, AoI_ddpg,  marker='o', label = 'ddpg')
+plt.plot(data_size_lst, AoI_random,   marker='*', label = 'random')
 
-plt.ylabel('$\overline{\Phi}$')
-plt.xlabel("包大小", fontproperties=font)
+# plt.ylabel('$\overline{\Phi}$')
+plt.ylabel('AoI')
+
+plt.xlabel("packet size")
+
+# plt.xlabel("包大小", fontproperties=font)
 plt.grid(linestyle=':')
-plt.legend(prop=font)
+# plt.legend(prop=font)
+plt.legend()
+
 plt.show()

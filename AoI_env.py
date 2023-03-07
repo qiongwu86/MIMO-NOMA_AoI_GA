@@ -1,9 +1,7 @@
 import numpy as np
-from helper import *
-import ipdb as pdb
+# from helper import *
 import tensorflow as tf
-import time
-import types
+from GA import *
 
 class MecTerm(object):
     """
@@ -82,6 +80,35 @@ class MecTerm(object):
         else:
             self.Phi_BS += self.t
             self.trans_time = 0
+
+
+        def upd_fitness(self, sinr):
+            # For GA fitness computing without user update 
+            DataBuf = self.DataBuf
+            trans_rate = self.bandwidth*np.log2(1 + sinr)*1000
+
+            if trans_rate*self.t > DataBuf:
+                upd = 1
+            else:
+                upd = 0
+
+            if self.t_factor*self.C_s - (1-self.t_factor)*upd*(self.phi+self.t) < 0:
+                sample = 1
+                phi_ = 0
+                DataBuf = self.data_size
+            else:
+                sample = 0
+                phi_ = self.phi + self.t
+
+            if upd == 1:
+                trans_time = DataBuf/trans_rate
+                Phi_BS_ = phi_ + trans_time
+                DataBuf = 0
+            else:
+                Phi_BS_ = self.Phi_BS+self.t
+                trans_time = 0
+            return trans_time, sample,  Phi_BS_
+
 
     def print_info(self):
         print ('id:%d\ttrans_rate:%s\t\ttrans_time:%s\t\tbuff:%s\t\tpower:%s\t\tupd:%d\tsample:%d\tphi:%s\t\tPhi_BS:%s'
@@ -179,7 +206,18 @@ class Random_policy(object):
         power = self.action_bound*np.random.random(size=(1,self.num_user*self.user_config['action_dim']))[0]
         noise = np.zeros(self.num_user*self.user_config['action_dim'])[0]
         return power, noise
-        
+
+    
+class GA_policy(Random_policy):
+    def evaluate(self, sinr_list, powers):
+        fitness = 0
+        for i, user in enumerate(self.user_list):
+            trans_time, sample,  Phi_BS_ = user.upd_fitness(sinr_list)
+            fitness +=  - (self.t_factor*(powers[i]*trans_time + sample*user.C_s) + (1-self.t_factor)*Phi_BS_)
+        return fitness
+
+
+
 class MecTermRL_test(object):
     """
     MEC terminal class using RL
@@ -345,7 +383,7 @@ class MecTermRL(object):
         power, noise = self.agent.predict(self.State, self.isUpdateActor)
         power = np.fmax(0, np.fmin(self.action_bound, power))
         return power, noise
-
+    
 class MecSvrEnv(object):
     """
     Simulation environment
@@ -360,9 +398,25 @@ class MecSvrEnv(object):
     def init_target_network(self):
         self.Agent_Term.agent.init_target_network()
 
+
     def step_transmit(self, isRandom=True):
         # get the channel vectors 
         channels = np.transpose([user.getCh() for user in self.Agent_Term.user_list])
+
+        # print(self.Agent_Term isinstance GA_policy)
+        if isinstance(self.Agent_Term, GA_policy):
+            CXPB, MUTPB, NGEN, popsize = 0.8, 0.5, 100, 100
+            up = [2]*self.Agent_Term.num_user
+            low = [0]*self.Agent_Term.num_user
+            parameter = [CXPB, MUTPB, NGEN, popsize, low, up]
+            run = GA(parameter)
+            run.GA_main()
+        
+        def evaluate(geneinfo):
+            powers = np.array(geneinfo).reshape(self.Agent_Term.num_user, self.Agent_Term.action_dim)
+            sinr_list = self.compute_sinr(channels, powers[:,0])
+            fitness = self.Agent_Term.evaluate(sinr_list, powers)
+            return fitness
 
         # get the transmit powers 
         powers, _ = self.Agent_Term.predict(isRandom)
@@ -373,11 +427,6 @@ class MecSvrEnv(object):
         # print (sinr_list)
 
         # feedback the sinr to each user
-        reward = 0
-        power_CnSpt = 0
-        energy_CnSpt = 0
-        total_AOI = 0
-
         _, _, smp_lst, upd_lst, reward, power_CnSpt, energy_CnSpt, total_AOI = self.Agent_Term.feedback(sinr_list, powers, self.count >= self.max_len)
 
         self.count += 1
@@ -432,3 +481,4 @@ class MecSvrEnv(object):
 
         self.seqCount += 1
         return init_data_buf_size
+    

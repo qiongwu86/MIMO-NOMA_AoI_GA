@@ -1,7 +1,7 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
-import ipdb as pdb
+# import ipdb as pdb
 import matplotlib.pyplot as plt
 from helper import *
 from matplotlib.font_manager import FontProperties  
@@ -52,18 +52,20 @@ for data_size in data_size_lst:
     energy_random.append(np.mean(output_avg_energy(res_path_random),axis=0))
 
 
-font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
-font2 = FontProperties(fname="C:/Windows/Fonts/Times.ttf", size=15)
+# font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
+# font2 = FontProperties(fname="C:/Windows/Fonts/Times.ttf", size=15)
 
-plt.plot(data_size_lst, energy_ddpg, marker='o', label ='最优策略')
-plt.plot(data_size_lst, energy_random, marker='*', label ='随机策略')
+plt.plot(data_size_lst, energy_ddpg, marker='o', label ='ddpg')
+plt.plot(data_size_lst, energy_random, marker='*', label ='random')
 # plt.ylabel("奖励",fontproperties=font)
 # plt.xlabel("片段",fontproperties=font)
 
-plt.ylabel('$\overline{\epsilon}$', fontProperties=font2)
-plt.xlabel("包大小", fontproperties=font)
+plt.ylabel('energy consumption')
+plt.xlabel("packet size")
 
 plt.grid(linestyle=':')
 
-plt.legend(prop=font)
+# plt.legend(prop=font)
+
+plt.legend()
 plt.show()

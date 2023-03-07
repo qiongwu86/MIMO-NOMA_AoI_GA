@@ -1,9 +1,9 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
-import ipdb as pdb
+# import ipdb as pdb
 import matplotlib.pyplot as plt
-from helper import *
+# from helper import *
 from matplotlib.font_manager import FontProperties  
 
 
@@ -49,19 +49,21 @@ x = np.arange(len(user_num_list))
 width = 0.25
 
 print (AoI_ddpg, AoI_random)
-plt.bar(x, AoI_ddpg,  width=width, label='最优策略',color='0.25')
-plt.bar(x +  width, AoI_random, width=width, label='随机策略', color='0.75', tick_label=user_num_list)
+plt.bar(x, AoI_ddpg,  width=width, label='ddpg')
+plt.bar(x +  width, AoI_random, width=width, label='random', color='darkred', tick_label=user_num_list)
 # plt.bar(x + 2 *width, AoI_max, width=width, label='max', color='salmon')
 
 plt.xticks()
-plt.ylabel('$\overline{\Phi}$')
+plt.ylabel('AoI')
 plt.xlabel('$M$')
 
 plt.grid(linestyle=':')
 
-font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
+# font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
 
-plt.legend(prop = font)
+# plt.legend(prop = font)
+
+plt.legend()
 plt.show()
 
 # 0.5373234790872096  0.5122950156634629

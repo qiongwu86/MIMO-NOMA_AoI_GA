@@ -1,13 +1,13 @@
 import os
 # os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 import numpy as np
-import ipdb as pdb
+# import ipdb as pdb
 import matplotlib.pyplot as plt
 from helper import *
 from matplotlib.font_manager import FontProperties  
 
 
-font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
+# font = FontProperties(fname="C:/Windows/Fonts/SimSun.ttc", size=15) 
 
 
 def output_avg(dir):
@@ -50,15 +50,18 @@ x = np.arange(len(user_num_list))
 width = 0.25
 
 print (AoI_ddpg,AoI_random)
-plt.bar(x, AoI_ddpg,  width=width, label='最优策略',color='0.25')
-plt.bar(x + width, AoI_random, width=width, label='随机策略', color='0.75', tick_label=user_num_list)
+plt.bar(x, AoI_ddpg,  width=width, label='ddpg')
+# plt.bar(x + width, AoI_random, width=width, label='random',  tick_label=user_num_list)
+plt.bar(x + width, AoI_random, width=width, label='random', color='darkred', tick_label=user_num_list)
 
 plt.xticks()
-plt.ylabel('$\overline{\epsilon}$')
+plt.ylabel('energy consumption')
 plt.xlabel('$M$')
 
 plt.grid(linestyle=':')
 
-plt.legend(prop=font)
+# plt.legend(prop=font)
+plt.legend()
+
 plt.show()
 
