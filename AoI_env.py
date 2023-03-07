@@ -405,7 +405,7 @@ class MecSvrEnv(object):
 
         # print(self.Agent_Term isinstance GA_policy)
         if isinstance(self.Agent_Term, GA_policy):
-            CXPB, MUTPB, NGEN, popsize = 0.8, 0.5, 100, 100
+            CXPB, MUTPB, NGEN, popsize = 0.8, 0.5, 50, 10
             up = [2]*self.Agent_Term.num_user
             low = [0]*self.Agent_Term.num_user
             parameter = [CXPB, MUTPB, NGEN, popsize, low, up]
